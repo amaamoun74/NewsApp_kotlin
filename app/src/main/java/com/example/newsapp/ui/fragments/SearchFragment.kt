@@ -26,8 +26,8 @@ import kotlinx.coroutines.launch
 class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    lateinit var newsViewModel: NewsViewModel
-    lateinit var newsAdapter: NewsAdapter
+    private lateinit var newsViewModel: NewsViewModel
+    private lateinit var newsAdapter: NewsAdapter
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

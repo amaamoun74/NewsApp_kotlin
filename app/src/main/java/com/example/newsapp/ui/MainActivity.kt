@@ -30,9 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         val newsRepository = NewsRepository(NewsDatabase(this))
         val viewModelProviderFactory  = NewsViewModelProviderFactory(newsRepository)
-        viewModel = ViewModelProvider(this,viewModelProviderFactory).get(NewsViewModel::class.java)
-
-
+        viewModel = ViewModelProvider(this,viewModelProviderFactory)[NewsViewModel::class.java]
 
     }
 }

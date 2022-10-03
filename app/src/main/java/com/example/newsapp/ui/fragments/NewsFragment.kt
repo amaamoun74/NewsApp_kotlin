@@ -22,8 +22,8 @@ import kotlinx.coroutines.Job
 class NewsFragment : Fragment() {
     private var _binding: FragmentNewsBinding? = null
     private val binding get() = _binding!!
-    lateinit var newsViewModel: NewsViewModel
-    lateinit var newsAdapter: NewsAdapter
+    private lateinit var newsViewModel: NewsViewModel
+    private lateinit var newsAdapter: NewsAdapter
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

@@ -10,13 +10,14 @@ import androidx.navigation.fragment.navArgs
 import com.example.newsapp.databinding.FragmentArticleBinding
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.viewModel.NewsViewModel
+import com.google.android.material.snackbar.Snackbar
 
 
 class ArticleFragment : Fragment() {
     private var _binding: FragmentArticleBinding? = null
     private val binding get() = _binding!!
-    lateinit var newsViewModel: NewsViewModel
-    val args:ArticleFragmentArgs by navArgs()
+    private lateinit var newsViewModel: NewsViewModel
+    private val args:ArticleFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,6 +29,15 @@ class ArticleFragment : Fragment() {
             webViewClient = WebViewClient()
             loadUrl(args.article.url)
         }
+
+        binding.saveFab.setOnClickListener{
+            newsViewModel.saveNews(args.article)
+            view?.let {
+                    it -> Snackbar.make(it, "successfully saved",Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+
         return binding.root
     }
 

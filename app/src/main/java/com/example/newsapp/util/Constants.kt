@@ -7,5 +7,6 @@ class Constants {
         const val SEARCH_DELAY_TIME = 300L
         const val QUERY_PAGE_SIZE = 20
         const val COUNTRY_CODE = "eg"
+        const val NEWS_ARTICLE_KEY ="news_article"
     }
 }

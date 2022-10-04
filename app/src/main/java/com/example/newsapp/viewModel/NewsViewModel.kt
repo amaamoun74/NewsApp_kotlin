@@ -12,13 +12,16 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class NewsViewModel(
-    val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository
 ):ViewModel() {
-    val newsPageNumber = 1
-    val news: MutableLiveData<ResponseState<NewsResponse>> = MutableLiveData()
 
-    val searchNewsPageNumber = 1
+     var newsPageNumber = 1
+    val news: MutableLiveData<ResponseState<NewsResponse>> = MutableLiveData()
+    private var newsResponse:NewsResponse? = null
+
+     var searchNewsPageNumber = 1
     val searchNews: MutableLiveData<ResponseState<NewsResponse>> = MutableLiveData()
+    private var searchNewsResponse:NewsResponse? = null
 
     init {
         getNews(Constants.COUNTRY_CODE)
@@ -32,7 +35,16 @@ class NewsViewModel(
     private fun checkNewsResponse(response: Response<NewsResponse>) : ResponseState<NewsResponse> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                return ResponseState.Success(resultResponse)
+                newsPageNumber ++
+                if (newsResponse == null){
+                    newsResponse = resultResponse
+                }
+                else{
+                    val oldNews = newsResponse?.articles
+                    val newNews = resultResponse.articles
+                    oldNews?.addAll(newNews)
+                }
+                return ResponseState.Success(newsResponse?:resultResponse)
             }
         }
             return ResponseState.Error(response.message())
@@ -47,7 +59,16 @@ class NewsViewModel(
     private fun checkSearchNewsResponse(response: Response<NewsResponse>) : ResponseState<NewsResponse> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                return ResponseState.Success(resultResponse)
+                searchNewsPageNumber ++
+                if (searchNewsResponse == null){
+                    searchNewsResponse = resultResponse
+                }
+                else{
+                    val oldNews = searchNewsResponse?.articles
+                    val newNews = resultResponse.articles
+                    oldNews?.addAll(newNews)
+                }
+                return ResponseState.Success(searchNewsResponse?:resultResponse)
             }
         }
         return ResponseState.Error(response.message())

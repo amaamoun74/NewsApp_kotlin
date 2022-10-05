@@ -1,5 +1,6 @@
 package com.example.newsapp.ui.fragments
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.FragmentNewsBinding
 import com.example.newsapp.ui.MainActivity
-import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.COUNTRY_CODE
 import com.example.newsapp.util.Constants.Companion.NEWS_ARTICLE_KEY
 import com.example.newsapp.util.Constants.Companion.PAGE_SIZE
@@ -20,8 +21,7 @@ import com.example.newsapp.util.ResponseState
 import com.example.newsapp.viewModel.NewsViewModel
 
 class NewsFragment : Fragment() {
-    private var _binding: FragmentNewsBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentNewsBinding
     private lateinit var newsViewModel: NewsViewModel
     private lateinit var newsAdapter: NewsAdapter
     private var isLoading = false
@@ -42,7 +42,6 @@ class NewsFragment : Fragment() {
             val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
             val visibleItemCount = layoutManager.childCount
             val totalItemCount = layoutManager.itemCount
-
             val isNotLoadingAndNotLastPage = !isLoading && !isLastPage
             val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
             val isNotAtFirst = firstVisibleItemPosition >= 0
@@ -50,7 +49,6 @@ class NewsFragment : Fragment() {
             val shouldPaginate = isNotLoadingAndNotLastPage &&
                     isAtLastItem && isNotAtFirst &&
                     isTotalMoreThanVisible && isScrolling
-
             if (shouldPaginate){
                 newsViewModel.getNews(COUNTRY_CODE)
                 isScrolling = false
@@ -59,9 +57,18 @@ class NewsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentNewsBinding.inflate(inflater, container, false)
+        binding = FragmentNewsBinding.inflate(inflater, container, false)
+        newsViewModel = (activity as MainActivity).viewModel
         setupRecyclerView()
         getData()
+        binding.swipeRefreshLayout.setOnRefreshListener{
+            newsViewModel.getNews(COUNTRY_CODE)
+            getData()
+            Handler().postDelayed({
+                binding.swipeRefreshLayout.isRefreshing = false
+            }, 4000)
+        }
+        // l onItemClickListener msh sh8ala hena m3 en hya sh8ala f l save w l search fragment !!!
         newsAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
                 putSerializable(NEWS_ARTICLE_KEY,it)
@@ -69,11 +76,6 @@ class NewsFragment : Fragment() {
             findNavController().navigate(R.id.action_newsFragment_to_articleFragment,bundle)
         }
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun setupRecyclerView(){
@@ -86,12 +88,14 @@ class NewsFragment : Fragment() {
     }
 
     private fun hideProgressBar() {
-    binding.paginationProgressBar.visibility = View.GONE
+        binding.paginationProgressBar.visibility = View.GONE
+        binding.swipeRefreshLayout.isRefreshing = false
+        binding.animationLayout.visibility = View.GONE
+        binding.contentLayout.visibility = View.VISIBLE
         isLoading = false
     }
 
     private fun showProgressBar() {
-        binding.paginationProgressBar.visibility = View.VISIBLE
         isLoading = true
     }
 
@@ -102,13 +106,9 @@ class NewsFragment : Fragment() {
         binding.tvErrorMessage.text = errorMessage
     }
 
-    private fun getData(){
-        newsViewModel = (activity as MainActivity).viewModel
+    private fun getData() {
         newsViewModel.news.observe(viewLifecycleOwner) { response ->
             when (response) {
-                is ResponseState.Error -> {
-                    onError(response.message.toString())
-                }
                 is ResponseState.Loading -> {
                     showProgressBar()
                 }
@@ -116,12 +116,15 @@ class NewsFragment : Fragment() {
                     hideProgressBar()
                     response.data?.let { newsResponse ->
                         newsAdapter.differ.submitList(newsResponse.articles.toList())
-                        val totalPage = newsResponse.totalResults / PAGE_SIZE +  2
+                        val totalPage = newsResponse.totalResults / PAGE_SIZE + 2
                         isLastPage = newsViewModel.newsPageNumber == totalPage
-                        if (isLastPage){
-                            binding.newsList.setPadding(0,0,0,0)
+                        if (isLastPage) {
+                            binding.newsList.setPadding(0, 0, 0, 0)
                         }
                     }
+                }
+                is ResponseState.Error -> {
+                    onError(response.message.toString())
                 }
             }
         }

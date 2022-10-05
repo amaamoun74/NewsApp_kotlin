@@ -72,7 +72,13 @@ class SavedNews : Fragment() {
 
         //hyb2a f error hena
         newsViewModel.getSavedNews().observe(viewLifecycleOwner) { article ->
+            if (article == null) {
+                newsAdapter.differ.submitList(null)
+                // handel l null list hena ui
+            }
+            else  {
                 newsAdapter.differ.submitList(article)
+            }
         }
 
 

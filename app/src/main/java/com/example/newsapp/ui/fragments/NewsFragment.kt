@@ -1,7 +1,5 @@
 package com.example.newsapp.ui.fragments
-
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +12,12 @@ import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.FragmentNewsBinding
 import com.example.newsapp.ui.MainActivity
+import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.COUNTRY_CODE
 import com.example.newsapp.util.Constants.Companion.NEWS_ARTICLE_KEY
 import com.example.newsapp.util.Constants.Companion.PAGE_SIZE
 import com.example.newsapp.util.ResponseState
 import com.example.newsapp.viewModel.NewsViewModel
-
 
 class NewsFragment : Fragment() {
     private var _binding: FragmentNewsBinding? = null
@@ -85,7 +83,6 @@ class NewsFragment : Fragment() {
             layoutManager = LinearLayoutManager(activity)
             addOnScrollListener(this@NewsFragment.scrollListener)
         }
-
     }
 
     private fun hideProgressBar() {
@@ -97,8 +94,12 @@ class NewsFragment : Fragment() {
         binding.paginationProgressBar.visibility = View.VISIBLE
         isLoading = true
     }
-    private fun onError() {
-        //binding.itemErrorMessage.tvErrorMessage = View.VISIBLE
+
+    private fun onError(errorMessage : String) {
+        hideProgressBar()
+        binding.contentLayout.visibility = View.GONE
+        binding.animationLayout.visibility = View.VISIBLE
+        binding.tvErrorMessage.text = errorMessage
     }
 
     private fun getData(){
@@ -106,11 +107,10 @@ class NewsFragment : Fragment() {
         newsViewModel.news.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is ResponseState.Error -> {
-                    hideProgressBar()
+                    onError(response.message.toString())
                 }
                 is ResponseState.Loading -> {
                     showProgressBar()
-                    Log.d("TAG ", response.message.toString())
                 }
                 is ResponseState.Success -> {
                     hideProgressBar()

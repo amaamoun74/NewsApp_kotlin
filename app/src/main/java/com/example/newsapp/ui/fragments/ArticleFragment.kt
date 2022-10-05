@@ -33,7 +33,7 @@ class ArticleFragment : Fragment() {
         binding.saveFab.setOnClickListener{
             newsViewModel.saveNews(args.article)
             view?.let {
-                    it -> Snackbar.make(it, "successfully saved",Snackbar.LENGTH_SHORT).show()
+                    it1 -> Snackbar.make(it1, "successfully saved",Snackbar.LENGTH_SHORT).show()
             }
         }
 

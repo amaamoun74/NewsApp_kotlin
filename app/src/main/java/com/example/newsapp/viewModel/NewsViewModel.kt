@@ -1,19 +1,27 @@
 package com.example.newsapp.viewModel
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsapp.NewsApplication
 import com.example.newsapp.model.Article
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.repo.NewsRepository
 import com.example.newsapp.util.Constants
+import com.example.newsapp.util.Constants.Companion.COUNTRY_CODE
 import com.example.newsapp.util.ResponseState
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.IOException
 
 class NewsViewModel(
-    private val newsRepository: NewsRepository
-):ViewModel() {
+    private val newsRepository: NewsRepository,
+    private val app: NewsApplication
+): AndroidViewModel(app) {
 
      var newsPageNumber = 1
     val news: MutableLiveData<ResponseState<NewsResponse>> = MutableLiveData()
@@ -24,13 +32,37 @@ class NewsViewModel(
     private var searchNewsResponse:NewsResponse? = null
 
     init {
-        getNews(Constants.COUNTRY_CODE)
+        getNews(COUNTRY_CODE)
+    }
+    private fun hasInternetConnection(): Boolean {
+        val connectivityManager = getApplication<NewsApplication>().getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+            return when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            connectivityManager.activeNetworkInfo?.run {
+                return when (type) {
+                    ConnectivityManager.TYPE_WIFI -> true
+                    ConnectivityManager.TYPE_MOBILE -> true
+                    ConnectivityManager.TYPE_ETHERNET -> true
+                    else -> false
+                }
+            }
+        }
+        return false
     }
 
     fun getNews(countryCode: String) = viewModelScope.launch {
-        news.postValue(ResponseState.Loading())
-        val response = newsRepository.getNews(countryCode, newsPageNumber)
-        news.postValue(checkNewsResponse(response))
+        safeNewsCall(countryCode)
     }
     private fun checkNewsResponse(response: Response<NewsResponse>) : ResponseState<NewsResponse> {
         if (response.isSuccessful) {
@@ -48,6 +80,23 @@ class NewsViewModel(
             }
         }
             return ResponseState.Error(response.message())
+    }
+
+    private suspend fun safeNewsCall(countryCode: String) {
+        news.postValue(ResponseState.Loading())
+        try {
+            if (hasInternetConnection()) {
+                val response = newsRepository.getNews(countryCode, newsPageNumber)
+                news.postValue(checkNewsResponse(response))
+            } else {
+                news.postValue(ResponseState.Error("No internet connection"))
+            }
+        } catch (t: Throwable) {
+            when (t) {
+                is IOException -> news.postValue(ResponseState.Error("Network Failure"))
+                else -> news.postValue(ResponseState.Error("Conversion Error"))
+            }
+        }
     }
 
 
@@ -80,7 +129,9 @@ class NewsViewModel(
 
     fun getSavedNews() = newsRepository.getSavedNews()
 
+
     fun deleteNews(article: Article) = viewModelScope.launch {
         newsRepository.deleteNews(article)
     }
+
 }

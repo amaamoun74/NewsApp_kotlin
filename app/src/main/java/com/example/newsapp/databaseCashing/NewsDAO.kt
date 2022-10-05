@@ -14,7 +14,7 @@ interface NewsDAO {
     suspend fun insert(article:Article):Long // used to insert or update news article as mentioned above .. long is for ID
 
     @Query("SELECT * From News" )
-    fun getAllSavedNews():LiveData<Article> // live data is mainly used to access data by XML views even landscape or portrait
+    fun getAllSavedNews():LiveData<List<Article>> // live data is mainly used to access data by XML views even landscape or portrait
 
     @Delete
     suspend fun deleteSavedNews(article: Article)

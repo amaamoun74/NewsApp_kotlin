@@ -1,12 +1,11 @@
 package com.example.newsapp.repo
 
-import android.app.DownloadManager.Query
 import com.example.newsapp.databaseCashing.NewsDatabase
 import com.example.newsapp.model.Article
 import com.example.newsapp.webServices.WebService
 
 class NewsRepository (
-    val database: NewsDatabase
+    private val database: NewsDatabase
         ){
     suspend fun getNews(countryCode:String , paging: Int) =
         WebService.api.getNews(countryCode,paging)

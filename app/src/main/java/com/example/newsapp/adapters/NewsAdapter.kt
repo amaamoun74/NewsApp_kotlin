@@ -1,4 +1,5 @@
 package com.example.newsapp.adapters
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -33,7 +34,11 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        return differ.currentList.size
+        return if (differ.currentList.isEmpty()) {
+            0
+        } else {
+            differ.currentList.size
+        }
     }
 
     private var onItemClickListener: ((Article) -> Unit)? = null
@@ -41,8 +46,10 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
         onItemClickListener = listener
     }
 
+
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = differ.currentList[position]
+        Log.d("article", article.toString())
         with(holder) {
             Glide.with(binding.root).load(article.urlToImage).into(binding.newsImage)
             binding.tvSource.text = article.source?.name
@@ -52,7 +59,9 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
             binding.newsView.setOnClickListener {
                 onItemClickListener?.let { it(article) }
             }
+
         }
     }
+
 
 }

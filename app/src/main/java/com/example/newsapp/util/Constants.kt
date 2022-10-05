@@ -7,6 +7,6 @@ class Constants {
         const val SEARCH_DELAY_TIME = 300L
         const val PAGE_SIZE = 15
         const val COUNTRY_CODE = "eg"
-        const val NEWS_ARTICLE_KEY ="news_article"
+        const val NEWS_ARTICLE_KEY ="article"
     }
 }

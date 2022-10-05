@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import androidx.cardview.widget.CardView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -86,7 +87,6 @@ class SearchFragment : Fragment() {
             }
             findNavController().navigate(R.id.action_searchFragment_to_articleFragment,bundle)
         }
-
         return binding.root
     }
 
@@ -116,7 +116,7 @@ class SearchFragment : Fragment() {
 
     private fun getData() {
         newsViewModel = (activity as MainActivity).viewModel
-        newsViewModel.searchNews.observe(viewLifecycleOwner, Observer { response ->
+        newsViewModel.searchNews.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is ResponseState.Error -> {
                     hideProgressBar()
@@ -137,7 +137,7 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
-        })
+        }
     }
 
     override fun onDestroyView() {

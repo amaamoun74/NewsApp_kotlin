@@ -14,7 +14,7 @@
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
         android:textSize="32sp"
-        android:text="@string/failed_to_connect"
+        android:text="@string/lost_connection"
         android:textAlignment="center" />
 
     <ImageView

@@ -9,7 +9,7 @@
     <string name="title">TITLE</string>
     <string name="description">DESCRIPTION</string>
     <string name="published_at">PUBLISHED AT</string>
-    <string name="failed_to_connect">Failed to connect</string>
+    <string name="lost_connection">Lost Connection</string>
     <string name="reload">reload</string>
     <string name="favorite">Favorite</string>
 </resources>

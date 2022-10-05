@@ -69,10 +69,12 @@ class SavedNews : Fragment() {
             attachToRecyclerView(binding.savedNewsList)
         }
 
+
         //hyb2a f error hena
-        newsViewModel.getSavedNews().observe(viewLifecycleOwner, Observer { article ->
-            newsAdapter.differ.submitList(article as MutableList<Article>)
-        })
+        newsViewModel.getSavedNews().observe(viewLifecycleOwner) { article ->
+                newsAdapter.differ.submitList(article)
+        }
+
 
         return binding.root
     }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.newsapp.NewsApplication
 import com.example.newsapp.R
 import com.example.newsapp.databaseCashing.NewsDatabase
 import com.example.newsapp.databinding.ActivityMainBinding
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNav.setupWithNavController(navHostFragment.navController)
 
         val newsRepository = NewsRepository(NewsDatabase(this))
-        val viewModelProviderFactory  = NewsViewModelProviderFactory(newsRepository)
+        val viewModelProviderFactory  = NewsViewModelProviderFactory( application as NewsApplication,newsRepository )
         viewModel = ViewModelProvider(this,viewModelProviderFactory)[NewsViewModel::class.java]
 
     }

@@ -7,10 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import androidx.cardview.widget.CardView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 
 class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
@@ -83,7 +82,7 @@ class SearchFragment : Fragment() {
 
         newsAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putSerializable(Constants.NEWS_ARTICLE_KEY,it)
+                putSerializable("article",it)
             }
             findNavController().navigate(R.id.action_searchFragment_to_articleFragment,bundle)
         }
@@ -102,16 +101,25 @@ class SearchFragment : Fragment() {
 
     private fun hideProgressBar() {
         binding.paginationProgressBar.visibility = View.GONE
+        binding.animationLayout.visibility = View.GONE
+        binding.rvSearchNews.visibility = View.VISIBLE
         isLoading = false
     }
 
     private fun showProgressBar() {
         binding.paginationProgressBar.visibility = View.VISIBLE
+        binding.animationLayout.visibility = View.GONE
+        binding.rvSearchNews.visibility = View.GONE
         isLoading = true
     }
 
-    private fun onError() {
-        //binding.itemErrorMessage.tvErrorMessage = View.VISIBLE
+    private fun onError(errorMessage : String , rawFile: Int) {
+        binding.paginationProgressBar.visibility = View.GONE
+        isLoading = false
+        binding.rvSearchNews.visibility = View.GONE
+        binding.animationLayout.visibility = View.VISIBLE
+        binding.animationView.setAnimation(rawFile)
+        binding.tvErrorMessage.text = errorMessage
     }
 
     private fun getData() {
@@ -119,11 +127,11 @@ class SearchFragment : Fragment() {
         newsViewModel.searchNews.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is ResponseState.Error -> {
-                    hideProgressBar()
+                    onError(response.message.toString(), R.raw.error)
+                    Log.d( Constants.TAG, response.message.toString())
                 }
                 is ResponseState.Loading -> {
                     showProgressBar()
-                    Log.d("TAG ", response.message.toString())
                 }
                 is ResponseState.Success -> {
                     hideProgressBar()

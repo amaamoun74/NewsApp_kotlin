@@ -33,7 +33,7 @@ class SavedNews : Fragment() {
 
         newsAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putSerializable(Constants.NEWS_ARTICLE_KEY,it)
+                putSerializable("article",it)
             }
             findNavController().navigate(R.id.action_savedNews_to_articleFragment,bundle)
         }

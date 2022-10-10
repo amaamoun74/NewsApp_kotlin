@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.fragments.SearchFragment">
+    tools:context=".ui.fragments.SearchFragment"
+
+    android:background="@color/black">
 
 
 
@@ -16,18 +18,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextColor="@color/white"
-        android:background="@color/purple_700"
+        android:background="@color/hint_black"
         app:title="@string/search" />
 
     <EditText
         android:id="@+id/etSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/search"
+        android:hint="@string/search_here"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:backgroundTint="@color/main_blue"
+        android:backgroundTintMode="src_in"
+        android:padding="16dp"
+        android:textColorHint="@color/hint_blue"
+        android:inputType="text"
+        android:importantForAutofill="no" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSearchNews"
@@ -40,18 +48,42 @@
         tools:layout_editor_absoluteX="0dp"
         tools:listitem="@layout/news_item"/>
 
-    <include
-        android:id="@+id/itemErrorMessage"
-        layout="@layout/error_message"
+    <LinearLayout
+        android:id="@+id/animationLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:visibility="invisible"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_anchorGravity="center"
+        android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            app:lottie_autoPlay="true"
+            android:layout_weight="1"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/error" />
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/lost_connection"
+            android:textColor="@color/hint_blue"
+            android:textAlignment="center"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/paginationProgressBar"

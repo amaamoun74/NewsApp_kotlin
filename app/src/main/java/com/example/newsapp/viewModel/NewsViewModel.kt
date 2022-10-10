@@ -1,5 +1,6 @@
 package com.example.newsapp.viewModel
 
+import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -11,7 +12,6 @@ import com.example.newsapp.NewsApplication
 import com.example.newsapp.model.Article
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.repo.NewsRepository
-import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.COUNTRY_CODE
 import com.example.newsapp.util.ResponseState
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ import java.io.IOException
 
 class NewsViewModel(
     private val newsRepository: NewsRepository,
-    private val app: NewsApplication
+    private val app: Application
 ): AndroidViewModel(app) {
 
      var newsPageNumber = 1
@@ -126,12 +126,9 @@ class NewsViewModel(
     fun saveNews(article: Article) = viewModelScope.launch {
         newsRepository.upsertNews(article)
     }
-
     fun getSavedNews() = newsRepository.getSavedNews()
-
 
     fun deleteNews(article: Article) = viewModelScope.launch {
         newsRepository.deleteNews(article)
     }
-
 }

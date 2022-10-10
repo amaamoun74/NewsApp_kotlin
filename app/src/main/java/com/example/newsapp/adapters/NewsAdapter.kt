@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapp.databinding.NewsItemBinding
 import com.example.newsapp.model.Article
+import java.util.*
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
 
@@ -34,11 +35,11 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        return if (differ.currentList.isEmpty()) {
+       /* return if (differ.currentList.isEmpty()) {
             0
         } else {
-            differ.currentList.size
-        }
+         */return   differ.currentList.size
+        //}
     }
 
     private var onItemClickListener: ((Article) -> Unit)? = null

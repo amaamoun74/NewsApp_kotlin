@@ -1,13 +1,12 @@
 package com.example.newsapp.viewModel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.newsapp.NewsApplication
 import com.example.newsapp.repo.NewsRepository
 
 class NewsViewModelProviderFactory(
-    private val app:NewsApplication,
+    private val app: Application,
     private val newsRepository: NewsRepository
 ): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

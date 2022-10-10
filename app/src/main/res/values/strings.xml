@@ -2,7 +2,7 @@
     <string name="app_name">NewsApp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="search">Search</string>
+    <string name="search">News Search </string>
     <string name="news">News</string>
     <string name="saved_news">Saved News</string>
     <string name="source">SOURCE</string>
@@ -12,4 +12,5 @@
     <string name="lost_connection">Lost Connection</string>
     <string name="reload">reload</string>
     <string name="favorite">Favorite</string>
+    <string name="search_here">search here …</string>
 </resources>

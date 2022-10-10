@@ -1,21 +1,22 @@
 package com.example.newsapp.ui.fragments
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.FragmentNewsBinding
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.util.Constants.Companion.COUNTRY_CODE
-import com.example.newsapp.util.Constants.Companion.NEWS_ARTICLE_KEY
 import com.example.newsapp.util.Constants.Companion.PAGE_SIZE
 import com.example.newsapp.util.ResponseState
 import com.example.newsapp.viewModel.NewsViewModel
@@ -71,9 +72,12 @@ class NewsFragment : Fragment() {
         // l onItemClickListener msh sh8ala hena m3 en hya sh8ala f l save w l search fragment !!!
         newsAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putSerializable(NEWS_ARTICLE_KEY,it)
+                putSerializable("article", it)
             }
-            findNavController().navigate(R.id.action_newsFragment_to_articleFragment,bundle)
+            findNavController().navigate(
+                R.id.action_newsFragment_to_articleFragment,
+                bundle
+            )
         }
         return binding.root
     }
@@ -91,7 +95,7 @@ class NewsFragment : Fragment() {
         binding.paginationProgressBar.visibility = View.GONE
         binding.swipeRefreshLayout.isRefreshing = false
         binding.animationLayout.visibility = View.GONE
-        binding.contentLayout.visibility = View.VISIBLE
+        binding.swipeRefreshLayout.visibility = View.VISIBLE
         isLoading = false
     }
 
@@ -116,6 +120,7 @@ class NewsFragment : Fragment() {
                     hideProgressBar()
                     response.data?.let { newsResponse ->
                         newsAdapter.differ.submitList(newsResponse.articles.toList())
+                        Log.d("data",newsResponse.articles.toList().toString())
                         val totalPage = newsResponse.totalResults / PAGE_SIZE + 2
                         isLastPage = newsViewModel.newsPageNumber == totalPage
                         if (isLastPage) {
